@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Peregrinación a Luján</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b3a6f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Luján">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<meta name="robots" content="noindex">
+<script src="config.js"></script>
+<style>
+:root { --ink:#16202b; --mut:#5d6b7a; --bg:#f3f5f7; --card:#fff; --line:#d9dfe5; --pri:#0b3a6f; --cel:#5aa9e6; --ok:#17794a; --okbg:#e3f4ea; --warn:#9a5b00; --warnbg:#fff3d6; --bad:#a32727; --badbg:#fde8e8; }
+* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body { margin:0; background:var(--bg); color:var(--ink); font:17px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; }
+.wrap { max-width:520px; margin:0 auto; padding:14px 16px 40px; }
+header { background:linear-gradient(160deg,#0b3a6f,#2f7fc4); color:#fff; margin:-14px -16px 14px; padding:14px 16px 12px; display:flex; align-items:center; gap:12px; }
+header svg { width:42px; height:42px; flex:none; }
+header h1 { font-size:19px; margin:0; line-height:1.15; }
+header .lema { font-size:12.5px; font-style:italic; opacity:.9; margin-top:2px; }
+header .tt { flex:1; }
+.sync { font-size:12px; color:var(--mut); display:flex; align-items:center; justify-content:flex-end; gap:6px; margin:-6px 0 8px; }
+.dot { width:9px; height:9px; border-radius:50%; background:#9aa6b2; }
+.dot.on { background:var(--ok); } .dot.off { background:var(--bad); }
+.card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:12px; }
+.prog b { font-size:30px; } .prog span { color:var(--mut); }
+.bar { height:10px; background:#e4e9ee; border-radius:6px; overflow:hidden; margin-top:8px; }
+.bar i { display:block; height:100%; background:var(--ok); width:0; transition:width .3s; }
+label { display:block; font-size:14px; color:var(--mut); margin-bottom:6px; }
+input,textarea { width:100%; font:inherit; color:inherit; background:#fff; border:2px solid var(--line); border-radius:12px; padding:12px; }
+input:focus,textarea:focus { outline:none; border-color:var(--pri); }
+#num { font-size:44px; font-weight:700; text-align:center; letter-spacing:2px; padding:10px; }
+button { font:inherit; font-weight:600; border:0; border-radius:12px; padding:15px 14px; width:100%; background:var(--pri); color:#fff; margin-top:10px; cursor:pointer; }
+button.sec { background:#fff; color:var(--pri); border:2px solid var(--pri); }
+button.ok { background:var(--ok); font-size:20px; padding:18px; }
+button.gris { background:#fff; color:var(--mut); border:2px solid var(--line); }
+button.rojo { background:#fff; color:var(--bad); border:2px solid var(--bad); }
+button:disabled { opacity:.5; }
+.nro { font-size:15px; color:var(--mut); font-weight:600; }
+.nombre { font-size:27px; font-weight:700; line-height:1.2; margin:2px 0 10px; }
+.aviso { border-radius:10px; padding:9px 11px; margin-top:8px; font-size:15px; }
+.aviso.w { background:var(--warnbg); color:var(--warn); }
+.aviso.g { background:var(--okbg); color:var(--ok); }
+.aviso.r { background:var(--badbg); color:var(--bad); }
+.aviso b { display:block; font-size:12px; text-transform:uppercase; letter-spacing:.4px; }
+.err { color:var(--bad); font-size:15px; margin-top:8px; min-height:20px; }
+.tabs { display:flex; gap:6px; margin-bottom:10px; }
+.tabs button { margin:0; padding:10px 4px; font-size:15px; background:#fff; color:var(--mut); border:2px solid var(--line); }
+.tabs button.act { background:var(--pri); color:#fff; border-color:var(--pri); }
+.fila { background:#fff; border:1px solid var(--line); border-radius:12px; padding:11px 12px; margin-bottom:7px; }
+.fila .top { display:flex; gap:10px; align-items:baseline; cursor:pointer; }
+.fila .n { font-weight:700; min-width:34px; color:var(--pri); }
+.fila .nm { flex:1; }
+.fila .h { font-size:13px; color:var(--mut); white-space:nowrap; }
+.det { margin-top:10px; border-top:1px solid var(--line); padding-top:10px; font-size:15px; }
+a.tel { display:block; text-align:center; text-decoration:none; font-weight:600; border-radius:12px; padding:13px; margin-top:8px; background:var(--okbg); color:var(--ok); border:2px solid var(--ok); }
+a.tel.em { background:var(--warnbg); color:var(--warn); border-color:var(--warn); }
+.mut { color:var(--mut); font-size:14px; }
+.pie { text-align:center; margin-top:14px; }
+.pie a { color:var(--mut); font-size:14px; }
+.hide { display:none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<svg viewBox="0 0 100 100" aria-hidden="true"><g fill="#fff"><path d="M50 30 L78 86 Q50 94 22 86 Z"/><circle cx="50" cy="27" r="8"/><path d="M41 17 L44 8 L50 14 L56 8 L59 17 Z"/></g><path d="M50 40 L66 82 Q50 86 34 82 Z" fill="#5aa9e6"/></svg>
+<div class="tt"><h1>Peregrinación a Luján</h1><div class="lema">Madre, en tu abrazo nos reconocemos hermanos</div></div>
+</header>
+<div class="sync"><span id="syncTxt">conectando</span><span class="dot" id="dot"></span></div>
+<section id="vLogin" class="hide">
+<div class="card">
+<label for="quien">Tu nombre (queda anotado en cada registro)</label>
+<input id="quien" autocomplete="off" placeholder="Ej: Nicolás">
+<label for="pin" style="margin-top:12px">Clave del equipo</label>
+<input id="pin" type="tel" inputmode="numeric" autocomplete="off">
+<button id="bLogin">Entrar</button>
+<div class="err" id="eLogin"></div>
+</div>
+</section>
+<section id="vHome" class="hide">
+<label>Estoy registrando en</label>
+<div class="tabs">
+<button id="cp0">Glorieta Basílica</button>
+<button id="cp1">Puesto de micros</button>
+</div>
+<div class="card prog">
+<b id="pOk">0</b> <span id="pTot">de 0 llegaron</span>
+<div class="bar"><i id="pBar"></i></div>
+<div class="mut" id="pOtro" style="margin-top:6px"></div>
+<div class="mut" id="pPend"></div>
+</div>
+<div class="card">
+<label for="num">Número de peregrino</label>
+<input id="num" type="tel" inputmode="numeric" autocomplete="off" maxlength="4">
+<button id="bBuscar">Buscar</button>
+<div class="err" id="eHome"></div>
+<label for="nom" style="margin-top:14px">¿No tiene el número? Buscá por nombre o apellido</label>
+<input id="nom" autocomplete="off" placeholder="Ej: Morri">
+<div id="res" style="margin-top:10px"></div>
+</div>
+<button class="sec" id="bLista">Consultar llegados y faltantes</button>
+<div class="pie"><a href="#" id="bSalir"></a></div>
+<div id="admin" class="hide" style="margin-top:22px">
+<button class="rojo" id="bReset">Administrador · reiniciar todo a cero</button>
+<div class="err" id="eAdmin"></div>
+</div>
+</section>
+<section id="vPer" class="hide">
+<div class="card">
+<div class="nro" id="dNro"></div>
+<div class="nombre" id="dNom"></div>
+<div id="dAvisos"></div>
+</div>
+<div id="pasoConf">
+<button class="ok" id="bSi">Sí, es esta persona</button>
+<button class="gris" id="bNo">No, volver</button>
+</div>
+<div id="pasoFin" class="hide">
+<div class="card">
+<label for="obs">Observaciones (opcional)</label>
+<textarea id="obs" rows="3"></textarea>
+</div>
+<button class="ok" id="bFin">Finalizar · marcar llegada</button>
+<button class="gris" id="bCanc">Cancelar</button>
+</div>
+<div id="pasoYa" class="hide">
+<div id="dTels"></div>
+<button class="sec" id="bVolver">Volver</button>
+<button class="rojo" id="bDesh">Deshacer llegada</button>
+</div>
+<button class="rojo hide" id="bBaja"></button>
+<div class="err" id="ePer"></div>
+</section>
+<section id="vLista" class="hide">
+<div class="tabs">
+<button data-t="faltan" id="tF"></button>
+<button data-t="llegaron" id="tL"></button>
+<button data-t="bajas" id="tB"></button>
+</div>
+<input id="filtro" placeholder="Buscar por nombre o número" autocomplete="off">
+<div id="lista" style="margin-top:10px"></div>
+<button class="sec" id="bInicio">Volver al inicio</button>
+</section>
+</div>
+<script>
+(function () {
+var D = [], pin = '', quien = '', tab = 'faltan', abierto = 0, actual = null, cola = [], conf = 0, admin = false, confB = 0;
+var cp = 0, CORTO = ['Glorieta', 'Micros'];
+function st(p) { return p.c[cp]; }
+function algun(p) { return p.c[0].ok || p.c[1].ok; }
+function $(id) { return document.getElementById(id); }
+function lsGet(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function ver(v) { ['vLogin', 'vHome', 'vPer', 'vLista'].forEach(function (x) { $(x).classList.toggle('hide', x !== v); }); window.scrollTo(0, 0); }
+function sync(estado, txt) { $('dot').className = 'dot ' + estado; $('syncTxt').textContent = txt; }
+var API = window.API_URL || '';
+function srv(fn, args, ok, fail) {
+var req = { fn: fn, args: args };
+var mal = function (e) { sync('off', 'sin conexión'); if (fail) fail(e); };
+if (window.google && google.script && google.script.run) { google.script.run.withSuccessHandler(ok).withFailureHandler(mal).api(req); return; }
+fetch(API, { method: 'POST', body: JSON.stringify(req), redirect: 'follow' }).then(function (r) { return r.json(); }).then(ok).catch(mal);
+}
+function tel(s) {
+var m = String(s || '').match(/\+?\d[\d\s\-]{5,}/);
+if (!m) return '';
+var d = m[0].replace(/[^\d+]/g, '');
+return d.replace('+', '').length >= 8 ? d : '';
+}
+function msjError(res) { return res.error === 'bloqueo' ? 'Demasiados intentos fallidos. Esperá 5 minutos.' : 'Clave incorrecta.'; }
+function busca(n) { for (var i = 0; i < D.length; i++) if (D[i].n === n) return D[i]; return null; }
+function enCola(n) { for (var i = 0; i < cola.length; i++) if (cola[i].n === n && (cola[i].cp || 0) === cp) return true; return false; }
+function recibir(res) {
+if (!res || res.error) { if (res && res.error) { pin = ''; lsSet('pin', ''); $('eLogin').textContent = msjError(res); ver('vLogin'); } return; }
+D = res.lista; admin = !!res.admin; $('admin').classList.toggle('hide', !res.admin); sync('on', 'actualizado ' + res.hora); pintar();
+}
+function pintar() {
+var ok = 0, baj = 0, tot = 0, otro = 0;
+D.forEach(function (p) { if (st(p).ok) ok++; if (p.c[1 - cp].ok) otro++; if (p.baja && !algun(p)) baj++; });
+tot = D.length - baj;
+$('pOk').textContent = ok; $('pTot').textContent = 'de ' + tot + ' pasaron por ' + CORTO[cp] + ' · faltan ' + (tot - ok);
+$('pOtro').textContent = 'En ' + CORTO[1 - cp] + ': ' + otro + ' de ' + tot; $('cp0').classList.toggle('act', cp === 0); $('cp1').classList.toggle('act', cp === 1);
+$('pBar').style.width = (tot ? Math.round(ok * 100 / tot) : 0) + '%';
+$('pPend').textContent = cola.length ? cola.length + ' registro(s) esperando señal para enviarse' : '';
+$('tF').textContent = 'Faltan ' + (tot - ok); $('tL').textContent = 'Pasaron ' + ok; $('tB').textContent = 'Bajas ' + baj;
+if (!$('vLista').classList.contains('hide')) pintarLista();
+}
+function avisos(p) {
+var h = '';
+if (p.baja && !algun(p)) h += '<div class="aviso r"><b>Baja</b>Figura como baja: no inició la caminata.</div>';
+if (p.dieta) h += '<div class="aviso w"><b>Alimentación</b>' + esc(p.dieta) + '</div>';
+if (p.med) h += '<div class="aviso w"><b>Medicación</b>' + esc(p.med) + '</div>';
+if (p.les) h += '<div class="aviso w"><b>Lesión</b>' + esc(p.les) + '</div>';
+if (p.desde) h += '<div class="mut" style="margin-top:8px">Camina desde ' + esc(p.desde) + '</div>';
+return h;
+}
+function telefonos(p) {
+var a = tel(p.tel), b = tel(p.em), h = '';
+h += a ? '<a class="tel" href="tel:' + a + '">Llamar al peregrino · ' + esc(p.tel) + '</a>' : '<div class="mut">Teléfono del peregrino: ' + esc(p.tel || 'sin dato') + '</div>';
+h += b ? '<a class="tel em" href="tel:' + b + '">Emergencia · ' + esc(p.em) + '</a>' : '<div class="mut" style="margin-top:6px">Emergencia: ' + esc(p.em || 'sin dato') + '</div>';
+return h;
+}
+function abrir(n) {
+var p = busca(n);
+if (!p) { $('eHome').textContent = 'No existe el peregrino Nº ' + n + '.'; return; }
+actual = p; conf = 0; $('eHome').textContent = ''; $('ePer').textContent = ''; $('obs').value = '';
+$('dNro').textContent = CORTO[cp] + ' · Peregrino Nº ' + p.n; $('dNom').textContent = p.nom;
+var pend = enCola(p.n), s = st(p), o = p.c[1 - cp], h = avisos(p);
+if (o.ok) h = '<div class="aviso g"><b>' + CORTO[1 - cp] + '</b>Pasó a las ' + esc(o.hora) + '</div>' + h;
+else if (cp === 1 && !p.baja) h = '<div class="aviso r"><b>Glorieta</b>No figura registrado en la Glorieta.</div>' + h;
+if (s.ok || pend) {
+h = '<div class="aviso g"><b>Ya registrado en ' + CORTO[cp] + '</b>' + (s.ok ? 'A las ' + esc(s.hora) + ' por ' + esc(s.por) : 'Registro guardado en este celular, esperando señal') + (s.obs ? '<br>Obs.: ' + esc(s.obs) : '') + '</div>' + h;
+}
+$('dAvisos').innerHTML = h;
+$('pasoConf').classList.toggle('hide', s.ok || pend);
+$('pasoFin').classList.add('hide');
+$('pasoYa').classList.toggle('hide', !(s.ok || pend));
+$('dTels').innerHTML = telefonos(p); $('bDesh').classList.toggle('hide', !s.ok); $('bDesh').textContent = 'Deshacer registro en ' + CORTO[cp]; $('bFin').textContent = 'Finalizar · marcar en ' + CORTO[cp]; confB = 0; $('bBaja').classList.toggle('hide', !admin || algun(p) || pend); $('bBaja').textContent = p.baja ? 'Quitar baja (sí camina)' : 'Marcar como baja';
+ver('vPer');
+}
+function irHome() { actual = null; $('num').value = ''; $('nom').value = ''; $('res').innerHTML = ''; ver('vHome'); pintar(); setTimeout(function () { $('num').focus(); }, 50); }
+function enviarCola() {
+if (!cola.length) return;
+var it = cola[0];
+srv('registrar', [pin, it.n, it.obs, it.quien, it.t, it.cp || 0], function (res) {
+cola.shift(); lsSet('cola', JSON.stringify(cola)); recibir(res); enviarCola();
+});
+}
+function finalizar() {
+var p = actual, b = $('bFin');
+b.disabled = true; b.textContent = 'Guardando…';
+var it = { n: p.n, obs: $('obs').value.trim(), quien: quien, t: horaLocal(), cp: cp };
+var listo = function () { b.disabled = false; irHome(); };
+srv('registrar', [pin, it.n, it.obs, it.quien, it.t, it.cp || 0], function (res) { recibir(res); listo(); }, function () {
+cola.push(it); lsSet('cola', JSON.stringify(cola)); listo();
+});
+}
+function horaLocal() { var d = new Date(); return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+function pintarLista() {
+var q = $('filtro').value.trim().toLowerCase(), h = '';
+['tF', 'tL', 'tB'].forEach(function (id) { $(id).classList.toggle('act', $(id).getAttribute('data-t') === tab); });
+var L = D.filter(function (p) {
+var grupo = st(p).ok ? 'llegaron' : (p.baja && !algun(p) ? 'bajas' : 'faltan');
+if (grupo !== tab) return false;
+return !q || String(p.n) === q || norm(p.nom).indexOf(norm(q)) >= 0;
+});
+if (tab === 'llegaron') L.sort(function (a, b) { return st(a).hora < st(b).hora ? 1 : -1; });
+L.forEach(function (p) {
+h += '<div class="fila"><div class="top" data-n="' + p.n + '"><span class="n">' + p.n + '</span><span class="nm">' + esc(p.nom) + '</span><span class="h">' + (st(p).ok ? esc(st(p).hora) : (p.c[1 - cp].ok ? CORTO[1 - cp] + ' ' + esc(p.c[1 - cp].hora) : '')) + '</span></div>';
+if (abierto === p.n) {
+h += '<div class="det">' + (st(p).ok ? '<div class="mut">Registró ' + esc(st(p).por) + (st(p).obs ? ' · Obs.: ' + esc(st(p).obs) : '') + '</div>' : '') + telefonos(p) + avisos(p) +
+'<button class="sec" data-ir="' + p.n + '">' + (st(p).ok ? 'Ver registro' : 'Registrar en ' + CORTO[cp]) + '</button></div>';
+}
+h += '</div>';
+});
+$('lista').innerHTML = h || '<div class="mut" style="padding:14px;text-align:center">Nadie en esta lista.</div>';
+}
+$('bLogin').onclick = function () {
+quien = $('quien').value.trim(); pin = $('pin').value.trim();
+if (!quien || !pin) { $('eLogin').textContent = 'Completá tu nombre y la clave.'; return; }
+$('eLogin').textContent = 'Entrando…';
+srv('datos', [pin], function (res) {
+if (res && res.error) { $('eLogin').textContent = msjError(res); return; }
+lsSet('pin', pin); lsSet('quien', quien); $('eLogin').textContent = ''; entrar(res);
+}, function () { $('eLogin').textContent = 'Sin conexión. Probá de nuevo.'; });
+};
+function entrar(res) { $('bSalir').textContent = 'Registrando como ' + quien + ' · cambiar'; recibir(res); irHome(); }
+$('bSalir').onclick = function (e) { e.preventDefault(); $('quien').value = quien; $('pin').value = pin; ver('vLogin'); };
+$('bBuscar').onclick = function () { var n = parseInt($('num').value, 10); if (!n) { $('eHome').textContent = 'Ingresá un número.'; return; } abrir(n); };
+$('num').onkeydown = function (e) { if (e.key === 'Enter') $('bBuscar').onclick(); };
+$('bNo').onclick = $('bCanc').onclick = $('bVolver').onclick = irHome;
+$('bSi').onclick = function () { $('pasoConf').classList.add('hide'); $('pasoFin').classList.remove('hide'); };
+$('bFin').onclick = finalizar;
+$('bDesh').onclick = function () {
+if (!conf) { conf = 1; this.textContent = 'Tocá otra vez para confirmar'; return; }
+var b = this; b.disabled = true;
+srv('deshacer', [pin, actual.n, cp], function (res) { b.disabled = false; recibir(res); irHome(); }, function () { b.disabled = false; $('ePer').textContent = 'Sin conexión: no se pudo deshacer.'; });
+};
+function norm(s) { return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+$('nom').oninput = function () {
+var q = norm(this.value.trim()), h = '';
+if (q.length >= 2) {
+var L = D.filter(function (p) { return norm(p.nom).indexOf(q) >= 0; }).slice(0, 8);
+L.forEach(function (p) { h += '<div class="fila"><div class="top" data-ir="' + p.n + '"><span class="n">' + p.n + '</span><span class="nm">' + esc(p.nom) + '</span><span class="h">' + (st(p).ok ? 'pasó ' + esc(st(p).hora) : (p.baja ? 'baja' : '')) + '</span></div></div>'; });
+if (!L.length) h = '<div class="mut">Nadie con ese nombre.</div>';
+}
+$('res').innerHTML = h;
+};
+$('res').onclick = function (e) { var ir = e.target.closest('[data-ir]'); if (ir) abrir(parseInt(ir.getAttribute('data-ir'), 10)); };
+$('bBaja').onclick = function () {
+if (!confB) { confB = 1; this.textContent = 'Tocá otra vez para confirmar'; return; }
+var b = this; b.disabled = true;
+srv('baja', [pin, actual.n, !actual.baja], function (res) { b.disabled = false; recibir(res); irHome(); }, function () { b.disabled = false; $('ePer').textContent = 'Sin conexión: no se pudo cambiar.'; });
+};
+cp = lsGet('cp') === '1' ? 1 : 0;
+$('cp0').onclick = $('cp1').onclick = function () { cp = this.id === 'cp1' ? 1 : 0; lsSet('cp', String(cp)); pintar(); };
+var confR = 0;
+$('bReset').onclick = function () {
+var b = this;
+if (confR < 2) { confR++; b.textContent = confR === 1 ? 'Se borran TODAS las llegadas. Tocá de nuevo' : 'Última confirmación: tocá para reiniciar'; setTimeout(function () { if (confR) { confR = 0; b.textContent = 'Administrador · reiniciar todo a cero'; } }, 6000); return; }
+confR = 0; b.disabled = true; b.textContent = 'Reiniciando…';
+var fin = function (t) { b.disabled = false; b.textContent = 'Administrador · reiniciar todo a cero'; $('eAdmin').textContent = t; };
+srv('reset', [pin], function (res) { cola = []; lsSet('cola', '[]'); recibir(res); fin(res && res.error ? 'No autorizado.' : 'Listo: todo en cero. Quedó una copia de respaldo en la planilla.'); }, function () { fin('Sin conexión: no se reinició.'); });
+};
+$('bLista').onclick = function () { abierto = 0; ver('vLista'); pintarLista(); };
+$('bInicio').onclick = irHome;
+$('filtro').oninput = pintarLista;
+['tF', 'tL', 'tB'].forEach(function (id) { $(id).onclick = function () { tab = this.getAttribute('data-t'); abierto = 0; pintarLista(); }; });
+$('lista').onclick = function (e) {
+var ir = e.target.closest('[data-ir]'), top = e.target.closest('.top');
+if (ir) { abrir(parseInt(ir.getAttribute('data-ir'), 10)); return; }
+if (top) { var n = parseInt(top.getAttribute('data-n'), 10); abierto = abierto === n ? 0 : n; pintarLista(); }
+};
+try { cola = JSON.parse(lsGet('cola') || '[]'); } catch (e) { cola = []; }
+pin = lsGet('pin'); quien = lsGet('quien');
+if (pin && quien) { srv('datos', [pin], function (res) { if (res && res.error) { ver('vLogin'); return; } entrar(res); enviarCola(); }, function () { ver('vLogin'); }); }
+else ver('vLogin');
+setInterval(function () { if (!pin || $('vLogin').classList.contains('hide') === false) return; if (cola.length) enviarCola(); else srv('datos', [pin], recibir); }, 8000);
+})();
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');</script>
+</body>
+</html>
