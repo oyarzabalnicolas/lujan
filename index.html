@@ -164,7 +164,8 @@ function srv(fn, args, ok, fail) {
 var req = { fn: fn, args: args };
 var mal = function (e) { sync('off', 'sin conexión'); if (fail) fail(e); };
 if (window.google && google.script && google.script.run) { google.script.run.withSuccessHandler(ok).withFailureHandler(mal).api(req); return; }
-fetch(API, { method: 'POST', body: JSON.stringify(req), redirect: 'follow' }).then(function (r) { return r.json(); }).then(ok).catch(mal);
+var n = 0, ir = function () { fetch(API, { method: 'POST', body: JSON.stringify(req), redirect: 'follow', credentials: 'omit' }).then(function (r) { return r.json(); }).then(ok, function (e) { if (++n < 3) setTimeout(ir, 1200); else mal(e); }); };
+ir();
 }
 function tel(s) {
 var m = String(s || '').match(/\+?\d[\d\s\-]{5,}/);
