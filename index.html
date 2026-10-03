@@ -86,7 +86,7 @@ a.tel.em { background:var(--warnbg); color:var(--warn); border-color:var(--warn)
 <label>Estoy registrando en</label>
 <div class="tabs">
 <button id="cp0">Glorieta Basílica</button>
-<button id="cp1">Puesto de micros</button>
+<button id="cp1">Puesto de Apoyo</button>
 </div>
 <div class="card prog">
 <b id="pOk">0</b> <span id="pTot">de 0 llegaron</span>
@@ -150,7 +150,7 @@ a.tel.em { background:var(--warnbg); color:var(--warn); border-color:var(--warn)
 <script>
 (function () {
 var D = [], pin = '', quien = '', tab = 'faltan', abierto = 0, actual = null, cola = [], conf = 0, admin = false, confB = 0;
-var cp = 0, CORTO = ['Glorieta', 'Micros'];
+var cp = 0, CORTO = ['Glorieta', 'Apoyo'];
 function st(p) { return p.c[cp]; }
 function algun(p) { return p.c[0].ok || p.c[1].ok; }
 function $(id) { return document.getElementById(id); }
