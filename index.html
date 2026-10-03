@@ -164,7 +164,13 @@ function srv(fn, args, ok, fail) {
 var req = { fn: fn, args: args };
 var mal = function (e) { sync('off', 'sin conexión'); if (fail) fail(e); };
 if (window.google && google.script && google.script.run) { google.script.run.withSuccessHandler(ok).withFailureHandler(mal).api(req); return; }
-var n = 0, ir = function () { fetch(API, { method: 'POST', body: JSON.stringify(req), redirect: 'follow', credentials: 'omit' }).then(function (r) { return r.json(); }).then(ok, function (e) { if (++n < 3) setTimeout(ir, 1200); else mal(e); }); };
+var n = 0, ir = function () {
+var ac = window.AbortController ? new AbortController() : null, t = setTimeout(function () { if (ac) ac.abort(); }, 12000);
+fetch(API, { method: 'POST', body: JSON.stringify(req), redirect: 'follow', credentials: 'omit', signal: ac ? ac.signal : undefined })
+.then(function (r) { return r.json(); })
+.then(function (x) { if (x && x.error === 'fallo') throw new Error('fallo'); return x; })
+.then(function (x) { clearTimeout(t); ok(x); }, function (e) { clearTimeout(t); if (++n < 3) setTimeout(ir, 1200); else mal(e); });
+};
 ir();
 }
 function tel(s) {
@@ -178,7 +184,7 @@ function busca(n) { for (var i = 0; i < D.length; i++) if (D[i].n === n) return 
 function enCola(n) { for (var i = 0; i < cola.length; i++) if (cola[i].n === n && (cola[i].cp || 0) === cp) return true; return false; }
 function recibir(res) {
 if (!res || res.error) { if (res && res.error) { pin = ''; lsSet('pin', ''); $('eLogin').textContent = msjError(res); ver('vLogin'); } return; }
-D = res.lista; admin = !!res.admin; $('admin').classList.toggle('hide', !res.admin); sync('on', 'actualizado ' + res.hora); pintar();
+D = res.lista; aplicarCola(); admin = !!res.admin; $('admin').classList.toggle('hide', !res.admin); sync('on', 'actualizado ' + res.hora); pintar();
 }
 function pintar() {
 var ok = 0, baj = 0, tot = 0, otro = 0;
@@ -187,7 +193,7 @@ tot = D.length - baj;
 $('pOk').textContent = ok; $('pTot').textContent = 'de ' + tot + ' pasaron por ' + CORTO[cp] + ' · faltan ' + (tot - ok);
 $('pOtro').textContent = 'En ' + CORTO[1 - cp] + ': ' + otro + ' de ' + tot; $('cp0').classList.toggle('act', cp === 0); $('cp1').classList.toggle('act', cp === 1);
 $('pBar').style.width = (tot ? Math.round(ok * 100 / tot) : 0) + '%';
-$('pPend').textContent = cola.length ? cola.length + ' registro(s) esperando señal para enviarse' : '';
+$('pPend').textContent = cola.length ? cola.length + ' registro(s) guardados en este celular, enviándose…' : '';
 $('tF').textContent = 'Faltan ' + (tot - ok); $('tL').textContent = 'Pasaron ' + ok; $('tB').textContent = 'Bajas ' + baj;
 if (!$('vLista').classList.contains('hide')) pintarLista();
 }
@@ -215,7 +221,7 @@ var pend = enCola(p.n), s = st(p), o = p.c[1 - cp], h = avisos(p);
 if (o.ok) h = '<div class="aviso g"><b>' + CORTO[1 - cp] + '</b>Pasó a las ' + esc(o.hora) + '</div>' + h;
 else if (cp === 1 && !p.baja) h = '<div class="aviso r"><b>Glorieta</b>No figura registrado en la Glorieta.</div>' + h;
 if (s.ok || pend) {
-h = '<div class="aviso g"><b>Ya registrado en ' + CORTO[cp] + '</b>' + (s.ok ? 'A las ' + esc(s.hora) + ' por ' + esc(s.por) : 'Registro guardado en este celular, esperando señal') + (s.obs ? '<br>Obs.: ' + esc(s.obs) : '') + '</div>' + h;
+h = '<div class="aviso g"><b>Ya registrado en ' + CORTO[cp] + '</b>' + (s.ok ? 'A las ' + esc(s.hora) + ' por ' + esc(s.por) : 'Registro guardado en este celular, enviándose') + (s.obs ? '<br>Obs.: ' + esc(s.obs) : '') + '</div>' + h;
 }
 $('dAvisos').innerHTML = h;
 $('pasoConf').classList.toggle('hide', s.ok || pend);
@@ -225,21 +231,24 @@ $('dTels').innerHTML = telefonos(p); $('bDesh').classList.toggle('hide', !s.ok);
 ver('vPer');
 }
 function irHome() { actual = null; $('num').value = ''; $('nom').value = ''; $('res').innerHTML = ''; ver('vHome'); pintar(); setTimeout(function () { $('num').focus(); }, 50); }
+var enviando = false, consultando = false;
+function aplicarCola() {
+cola.forEach(function (it) { var p = busca(it.n), k = it.cp || 0; if (p && !p.c[k].ok) p.c[k] = { ok: true, hora: it.t, por: it.quien, obs: it.obs }; });
+}
 function enviarCola() {
-if (!cola.length) return;
+if (enviando || !cola.length) return;
+enviando = true;
 var it = cola[0];
 srv('registrar', [pin, it.n, it.obs, it.quien, it.t, it.cp || 0], function (res) {
+enviando = false;
+if (!res || res.error) { recibir(res); return; }
 cola.shift(); lsSet('cola', JSON.stringify(cola)); recibir(res); enviarCola();
-});
+}, function () { enviando = false; pintar(); });
 }
 function finalizar() {
-var p = actual, b = $('bFin');
-b.disabled = true; b.textContent = 'Guardando…';
-var it = { n: p.n, obs: $('obs').value.trim(), quien: quien, t: horaLocal(), cp: cp };
-var listo = function () { b.disabled = false; irHome(); };
-srv('registrar', [pin, it.n, it.obs, it.quien, it.t, it.cp || 0], function (res) { recibir(res); listo(); }, function () {
-cola.push(it); lsSet('cola', JSON.stringify(cola)); listo();
-});
+var p = actual;
+cola.push({ n: p.n, obs: $('obs').value.trim(), quien: quien, t: horaLocal(), cp: cp });
+lsSet('cola', JSON.stringify(cola)); aplicarCola(); irHome(); enviarCola();
 }
 function horaLocal() { var d = new Date(); return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
 function pintarLista() {
@@ -279,7 +288,8 @@ $('bSi').onclick = function () { $('pasoConf').classList.add('hide'); $('pasoFin
 $('bFin').onclick = finalizar;
 $('bDesh').onclick = function () {
 if (!conf) { conf = 1; this.textContent = 'Tocá otra vez para confirmar'; return; }
-var b = this; b.disabled = true;
+var b = this, nro = actual.n; b.disabled = true;
+cola = cola.filter(function (it) { return !(it.n === nro && (it.cp || 0) === cp); }); lsSet('cola', JSON.stringify(cola));
 srv('deshacer', [pin, actual.n, cp], function (res) { b.disabled = false; recibir(res); irHome(); }, function () { b.disabled = false; $('ePer').textContent = 'Sin conexión: no se pudo deshacer.'; });
 };
 function norm(s) { return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
@@ -321,7 +331,7 @@ try { cola = JSON.parse(lsGet('cola') || '[]'); } catch (e) { cola = []; }
 pin = lsGet('pin'); quien = lsGet('quien');
 if (pin && quien) { srv('datos', [pin], function (res) { if (res && res.error) { ver('vLogin'); return; } entrar(res); enviarCola(); }, function () { ver('vLogin'); }); }
 else ver('vLogin');
-setInterval(function () { if (!pin || $('vLogin').classList.contains('hide') === false) return; if (cola.length) enviarCola(); else srv('datos', [pin], recibir); }, 8000);
+setInterval(function () { if (!pin || $('vLogin').classList.contains('hide') === false) return; if (cola.length) { enviarCola(); return; } if (consultando) return; consultando = true; srv('datos', [pin], function (res) { consultando = false; recibir(res); }, function () { consultando = false; }); }, 8000);
 })();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');</script>
